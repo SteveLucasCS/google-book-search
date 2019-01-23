@@ -1,36 +1,73 @@
-import React, { Component } from "react";
-import Jumbotron from "../../components/Jumbotron";
-import DeleteBtn from "../../components/DeleteBtn";
-import API from "../../utils/API";
-import { Col, Row, Container } from "../../components/Grid";
-import { List, ListItem } from "../../components/List";
-import { Input, TextArea, FormBtn } from "../../components/Form";
+import React, { Component } from 'react';
+import Jumbotron from '../../components/Jumbotron';
+import DeleteBtn from '../../components/DeleteBtn';
+import SaveBtn from '../../components/SaveBtn';
+import API from '../../utils/API';
+import { Col, Row, Container } from '../../components/Grid';
+import { List, ListItem } from '../../components/List';
+import { Input, TextArea, FormBtn } from '../../components/Form';
 
 class Books extends Component {
   // Setting our component's initial state
   state = {
     books: [],
-    title: "",
-    author: "",
-    synopsis: ""
+    title: '',
+    resutlsHeading: 'Saved Books'
   };
 
   // When the component mounts, load all books and save them to this.state.books
-  componentDidMount() {
-    this.loadBooks();
+  componentDidMount () {
+    API.getSavedBooks().then((results) => {
+      this.setState({ books: results });
+    });
   }
 
   // Loads all books  and sets them to this.state.books
-  loadBooks = () => {
+  getSavedBooks = () => {
     API.getBooks()
-      .then(res =>
-        this.setState({ books: res.data, title: "", author: "", synopsis: "" })
+      .then((res) =>
+        this.setState({
+          books: res.data,
+          title: '',
+          resultsHeading: 'Saved Books'
+        })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
+  };
+
+  // Save book to database
+  saveBook = (book) => {
+    book.saved = true;
+    API.saveBook(book)
+      .then(() =>
+        this.setState({
+          books: this.state.books,
+          title: '',
+          resultsHeading: 'Search Results'
+        })
+      )
+      .catch((e) => console.log(e));
+  };
+
+  deleteBook = (book) => {
+    book.saved = false;
+    let bookIndex = this.books.findIndex((i) => {
+      if (i.isbn10 === book.isnb10) return i;
+    });
+    let newArr = this.state.books.splice(bookIndex, 1);
+    API.deleteBook(book.isbn10)
+      .then(() =>
+        this.setState({
+          books: newArr,
+          title: '',
+          resultsHeading: 'Search Resutls'
+        })
+      )
+      .catch((e) => console.log(e));
   };
 
   // Handles updating component state when the user types into the input field
-  handleInputChange = event => {
+  handleInputChange = (event) => {
     const { name, value } = event.target;
     this.setState({
       [name]: value
@@ -38,61 +75,62 @@ class Books extends Component {
   };
 
   // Search for a book by title
-  handleFormSubmit = event => {
+  handleFormSubmit = (event) => {
     event.preventDefault();
-    API.
+    API.searchByTitle(this.state.title)
+      .then((res) => {
+        this.setState({
+          books: res.data,
+          title: '',
+          resultsHeading: 'Search Resutls'
+        });
+        console.log(res);
+      })
+      .catch((e) => console.log(e));
   };
 
-  render() {
+  render () {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size='sm-12'>
             <Jumbotron>
-              <h1>What Books Should I Read?</h1>
+              <h1>Search for a Book</h1>
             </Jumbotron>
             <form>
               <Input
                 value={this.state.title}
                 onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
+                name='title'
+                placeholder='Title (required)'
               />
               <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Submit Book
+                disabled={!this.state.title}
+                onClick={this.handleFormSubmit}>
+                Search
               </FormBtn>
             </form>
           </Col>
-          <Col size="md-6 sm-12">
+        </Row>
+        <Row>
+          <Col size='sm-12'>
             <Jumbotron>
-              <h1>Books On My List</h1>
+              <h1>{this.state.resultsHeading}</h1>
             </Jumbotron>
             {this.state.books.length ? (
               <List>
-                {this.state.books.map(book => {
+                {this.state.books.map((book) => {
                   return (
-                    <ListItem key={book._id}>
-                      <a href={"/books/" + book._id}>
+                    <ListItem key={book.isbn10}>
+                      <a href={'/books/' + book.isbn10}>
                         <strong>
                           {book.title} by {book.author}
                         </strong>
                       </a>
-                      <DeleteBtn onClick={() => this.deleteBook(book._id)} />
+                      <SaveBtn onClick={() => this.saveBook(book)} />
+                      {book.saved && (
+                        <DeleteBtn onClick={() => this.removeBook(book)} />
+                      )}
                     </ListItem>
                   );
                 })}

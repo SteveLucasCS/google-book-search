@@ -15,14 +15,12 @@
   },
   "author": "Steve Lucas",
   "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^4.1.0",
-    "nodemon": "^1.18.7"
-  },
   "dependencies": {
     "axios": "^0.18.0",
     "express": "^4.16.3",
     "mongoose": "^5.3.16",
-    "if-env": "^1.0.4"
+    "if-env": "^1.0.4",
+    "concurrently": "^4.1.0",
+    "nodemon": "^1.18.7"
   }
 }

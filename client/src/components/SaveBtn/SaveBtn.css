@@ -1,4 +1,16 @@
-.delete-btn {
+
+.save-btn {
+  color: #22B24C;
+  font-size: 1.5rem;
+  margin-top: 0;
   float: right;
-  color: #e74944;
+
+}
+@media only screen and (min-width: 600px) {
+  .save-btn {
+    float: none;
+    display: block;
+    font-size: 1.5em;
+    margin-top: 3rem;
+  }
 }

@@ -1,4 +1,15 @@
 .delete-btn {
-  float: right;
   color: #e74944;
+  font-size: 3rem;
+  margin-top: 0;
+  float: right;
+
+}
+@media only screen and (min-width: 600px) {
+  .delete-btn {
+    float: none;
+    display: block;
+    font-size: 3em;
+    margin-top: 3rem;
+  }
 }

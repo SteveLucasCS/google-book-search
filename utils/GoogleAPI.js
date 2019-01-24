@@ -32,15 +32,22 @@ module.exports = function searchByTitle (title, cb) {
         } else {
           image = bookInfo.imageLinks.thumbnail;
         }
+        let authors = '';
+        if (bookInfo.authors) {
+          authors = bookInfo.authors[0];
+        }
 
-        booksArr.push({
-          title: bookInfo.title,
-          author: bookInfo.authors,
-          description: bookInfo.description,
-          image: image,
-          isbn10: isbn10,
-          saved: false
-        });
+        if (isbn10) {
+          booksArr.push({
+            title: bookInfo.title,
+            author: authors,
+            description: bookInfo.description,
+            image: image,
+            isbn10: isbn10,
+            date: bookInfo.publishedDate,
+            saved: false
+          });
+        }
       }
       cb(booksArr);
     })

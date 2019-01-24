@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import API from '../../utils/API';
+import API from '../../utils/api';
 import { Col, Row, Container } from '../../components/Grid';
 import { Input, FormBtn } from '../../components/Form';
 import ControlledTabs from '../../components/Tabs';
